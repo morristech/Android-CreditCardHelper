@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">信用卡助手</string>
+
+    <string name="label_list">我的信用卡</string>
+    <string name="label_add">添加卡片</string>
+    <string name="label_edit">编辑卡片</string>
+    <string name="label_detail">卡片详情</string>
+</resources>
