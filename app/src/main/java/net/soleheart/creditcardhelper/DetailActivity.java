@@ -39,13 +39,13 @@ public class DetailActivity extends AppCompatActivity {
         initViews();
     }
 
-    private void initDao(){
+    private void initDao() {
         mDaoHelper = new DaoMaster.DevOpenHelper(this, "creditcard-db", null);
         SQLiteDatabase db = mDaoHelper.getReadableDatabase();
         mDaoMaster = new DaoMaster(db);
     }
 
-    private void initViews(){
+    private void initViews() {
         mBankName = (TextView) findViewById(R.id.detail_bank_name);
         mBillDate = (TextView) findViewById(R.id.detail_bill_date);
         mPayDate = (TextView) findViewById(R.id.detail_pay_date);
@@ -59,7 +59,7 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-    private void onDeleteClicked(){
+    private void onDeleteClicked() {
         mDaoMaster.newSession().getCreditCardDao().deleteByKey(mId);
         finish();
     }
@@ -88,7 +88,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == android.R.id.home){
+        if (id == android.R.id.home) {
             finish();
             return true;
         } else if (id == R.id.action_detail_edit) {

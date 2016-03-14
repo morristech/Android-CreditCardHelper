@@ -13,6 +13,7 @@ public class CreditCard implements java.io.Serializable {
     private int payDate;
     /** Not-null value. */
     private String lastDigits;
+    private Integer dynamicFreePeriod;
 
     public CreditCard() {
     }
@@ -21,12 +22,13 @@ public class CreditCard implements java.io.Serializable {
         this.id = id;
     }
 
-    public CreditCard(Long id, String bankName, int billDate, int payDate, String lastDigits) {
+    public CreditCard(Long id, String bankName, int billDate, int payDate, String lastDigits, Integer dynamicFreePeriod) {
         this.id = id;
         this.bankName = bankName;
         this.billDate = billDate;
         this.payDate = payDate;
         this.lastDigits = lastDigits;
+        this.dynamicFreePeriod = dynamicFreePeriod;
     }
 
     public Long getId() {
@@ -71,6 +73,14 @@ public class CreditCard implements java.io.Serializable {
     /** Not-null value; ensure this value is available before it is saved to the database. */
     public void setLastDigits(String lastDigits) {
         this.lastDigits = lastDigits;
+    }
+
+    public Integer getDynamicFreePeriod() {
+        return dynamicFreePeriod;
+    }
+
+    public void setDynamicFreePeriod(Integer dynamicFreePeriod) {
+        this.dynamicFreePeriod = dynamicFreePeriod;
     }
 
 }

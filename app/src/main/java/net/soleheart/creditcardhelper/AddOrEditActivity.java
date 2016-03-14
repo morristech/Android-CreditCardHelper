@@ -21,6 +21,7 @@ import com.mobsandgeeks.saripaar.annotation.NotEmpty;
 import net.soleheart.creditcardhelper.greendao.CreditCard;
 import net.soleheart.creditcardhelper.greendao.CreditCardDao;
 import net.soleheart.creditcardhelper.greendao.DaoMaster;
+import net.soleheart.creditcardhelper.logic.FreePriodHelper;
 
 import java.util.List;
 
@@ -123,6 +124,9 @@ public class AddOrEditActivity extends AppCompatActivity implements Validator.Va
         creditCard.setBillDate(safeParseInt(billDate));
         creditCard.setPayDate(safeParseInt(payDate));
         creditCard.setLastDigits(lastDigits);
+
+        int freePeriod = FreePriodHelper.calcFreePeriod(creditCard.getBillDate(), creditCard.getPayDate());
+        creditCard.setDynamicFreePeriod(freePeriod);
 
         try {
             if (mEditMode) {

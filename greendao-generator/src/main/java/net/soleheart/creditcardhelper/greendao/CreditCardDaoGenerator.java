@@ -32,5 +32,6 @@ public class CreditCardDaoGenerator {
         creditCardItem.addIntProperty("billDate").notNull();
         creditCardItem.addIntProperty("payDate").notNull();
         creditCardItem.addStringProperty("lastDigits").notNull();
+        creditCardItem.addIntProperty("dynamicFreePeriod");
     }
 }

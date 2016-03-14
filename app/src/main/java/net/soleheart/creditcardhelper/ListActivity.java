@@ -13,9 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import net.soleheart.creditcardhelper.greendao.CreditCard;
 import net.soleheart.creditcardhelper.greendao.CreditCardDao;
 import net.soleheart.creditcardhelper.greendao.DaoMaster;
 import net.soleheart.creditcardhelper.logic.FreePriodHelper;
+
+import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
     private DaoMaster.DevOpenHelper mDaoHelper;
@@ -24,6 +27,8 @@ public class ListActivity extends AppCompatActivity {
     private Cursor mCursor;
     private SimpleCursorAdapter mCursorAdapter;
 
+    private boolean mOrderByFreePeriodDesc = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +36,8 @@ public class ListActivity extends AppCompatActivity {
 
         initDao();
         initListView();
+
+        updateFreePeriod(mDao);
     }
 
     private void initDao() {
@@ -41,18 +48,16 @@ public class ListActivity extends AppCompatActivity {
         // 配置adapter
         String[] from = {CreditCardDao.Properties.BankName.columnName,
                 CreditCardDao.Properties.LastDigits.columnName,
-                CreditCardDao.Properties.PayDate.columnName};
+                CreditCardDao.Properties.DynamicFreePeriod.columnName};
         int[] to = {R.id.item_bank_name, R.id.item_last_digits, R.id.item_free_period};
         mCursorAdapter = new SimpleCursorAdapter(this, R.layout.list_item, mCursor, from, to, 0);
         mCursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
             @Override
             public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
                 // 是否是免息期那一列
-                int tempColumnIndex = cursor.getColumnIndex(CreditCardDao.Properties.PayDate.columnName);
+                int tempColumnIndex = cursor.getColumnIndex(CreditCardDao.Properties.DynamicFreePeriod.columnName);
                 if (tempColumnIndex == columnIndex) {
-                    int billDateIndex = cursor.getColumnIndex(CreditCardDao.Properties.BillDate.columnName);
-                    int payDateIndex = cursor.getColumnIndex(CreditCardDao.Properties.PayDate.columnName);
-                    int freePeriod = FreePriodHelper.calcFreePeriod(cursor.getInt(billDateIndex), cursor.getInt(payDateIndex));
+                    int freePeriod = cursor.getInt(columnIndex);
 
                     mCursorAdapter.setViewText((TextView) view, "免息期: " + freePeriod + "天");
                     return true;
@@ -92,6 +97,20 @@ public class ListActivity extends AppCompatActivity {
             Intent intent = new Intent(ListActivity.this, AddOrEditActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_list_reorder_asc) {
+            mOrderByFreePeriodDesc = false;
+            refreshCursor();
+
+            item.setChecked(true);
+
+            return true;
+        } else if (id == R.id.action_list_reorder_desc) {
+            mOrderByFreePeriodDesc = true;
+            refreshCursor();
+
+            item.setChecked(true);
+
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -104,13 +123,25 @@ public class ListActivity extends AppCompatActivity {
         refreshCursor();
     }
 
+    private void updateFreePeriod(CreditCardDao dao) {
+        List<CreditCard> creditCards = dao.loadAll();
+        for (CreditCard card : creditCards) {
+            int freePeriod = FreePriodHelper.calcFreePeriod(card.getBillDate(), card.getPayDate());
+            card.setDynamicFreePeriod(freePeriod);
+        }
+
+        dao.updateInTx(creditCards);
+    }
+
     private void refreshCursor() {
         if (mCursor != null) {
             mCursor.close();
             mCursor = null;
         }
 
-        mCursor = mDb.query(mDao.getTablename(), mDao.getAllColumns(), null, null, null, null, null);
+        String orderSuffix = mOrderByFreePeriodDesc ? " DESC" : " ASC";
+        String orderBy = CreditCardDao.Properties.DynamicFreePeriod.columnName + orderSuffix;
+        mCursor = mDb.query(mDao.getTablename(), mDao.getAllColumns(), null, null, null, null, orderBy);
         if (mCursorAdapter != null) {
             if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.GINGERBREAD) {
                 mCursorAdapter.swapCursor(mCursor);

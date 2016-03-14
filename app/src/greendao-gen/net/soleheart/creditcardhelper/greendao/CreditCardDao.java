@@ -28,6 +28,7 @@ public class CreditCardDao extends AbstractDao<CreditCard, Long> {
         public final static Property BillDate = new Property(2, int.class, "billDate", false, "BILL_DATE");
         public final static Property PayDate = new Property(3, int.class, "payDate", false, "PAY_DATE");
         public final static Property LastDigits = new Property(4, String.class, "lastDigits", false, "LAST_DIGITS");
+        public final static Property DynamicFreePeriod = new Property(5, Integer.class, "dynamicFreePeriod", false, "DYNAMIC_FREE_PERIOD");
     };
 
 
@@ -47,7 +48,8 @@ public class CreditCardDao extends AbstractDao<CreditCard, Long> {
                 "'BANK_NAME' TEXT NOT NULL ," + // 1: bankName
                 "'BILL_DATE' INTEGER NOT NULL ," + // 2: billDate
                 "'PAY_DATE' INTEGER NOT NULL ," + // 3: payDate
-                "'LAST_DIGITS' TEXT NOT NULL );"); // 4: lastDigits
+                "'LAST_DIGITS' TEXT NOT NULL ," + // 4: lastDigits
+                "'DYNAMIC_FREE_PERIOD' INTEGER);"); // 5: dynamicFreePeriod
     }
 
     /** Drops the underlying database table. */
@@ -69,6 +71,11 @@ public class CreditCardDao extends AbstractDao<CreditCard, Long> {
         stmt.bindLong(3, entity.getBillDate());
         stmt.bindLong(4, entity.getPayDate());
         stmt.bindString(5, entity.getLastDigits());
+ 
+        Integer dynamicFreePeriod = entity.getDynamicFreePeriod();
+        if (dynamicFreePeriod != null) {
+            stmt.bindLong(6, dynamicFreePeriod);
+        }
     }
 
     /** @inheritdoc */
@@ -85,7 +92,8 @@ public class CreditCardDao extends AbstractDao<CreditCard, Long> {
             cursor.getString(offset + 1), // bankName
             cursor.getInt(offset + 2), // billDate
             cursor.getInt(offset + 3), // payDate
-            cursor.getString(offset + 4) // lastDigits
+            cursor.getString(offset + 4), // lastDigits
+            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5) // dynamicFreePeriod
         );
         return entity;
     }
@@ -98,6 +106,7 @@ public class CreditCardDao extends AbstractDao<CreditCard, Long> {
         entity.setBillDate(cursor.getInt(offset + 2));
         entity.setPayDate(cursor.getInt(offset + 3));
         entity.setLastDigits(cursor.getString(offset + 4));
+        entity.setDynamicFreePeriod(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
      }
     
     /** @inheritdoc */

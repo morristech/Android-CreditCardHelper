@@ -3,8 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_list_add"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_add_white_24dp"
         android:orderInCategory="100"
         android:title="添加"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_list_reorder"
+        android:orderInCategory="100"
+        android:title="排序"
+        app:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_list_reorder_asc"
+                    android:title="最小免息期" />
+                <item
+                    android:id="@+id/action_list_reorder_desc"
+                    android:title="最大免息期" />
+            </group>
+        </menu>
+    </item>
 </menu>
