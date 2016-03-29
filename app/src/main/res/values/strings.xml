@@ -5,4 +5,6 @@
     <string name="label_add">添加卡片</string>
     <string name="label_edit">编辑卡片</string>
     <string name="label_detail">卡片详情</string>
+    <string name="delete_card_title">删除卡片</string>
+    <string name="delete_card_message">确定删除本张卡片？</string>
 </resources>

@@ -34,6 +34,8 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
+        getSupportActionBar().setTitle(R.string.label_list);
+
         initDao();
         initListView();
 

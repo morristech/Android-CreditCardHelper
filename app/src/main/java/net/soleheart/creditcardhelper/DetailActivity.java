@@ -1,8 +1,11 @@
 package net.soleheart.creditcardhelper;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -60,8 +63,18 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void onDeleteClicked() {
-        mDaoMaster.newSession().getCreditCardDao().deleteByKey(mId);
-        finish();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.delete_card_title)
+                .setMessage(R.string.delete_card_message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDaoMaster.newSession().getCreditCardDao().deleteByKey(mId);
+                        finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null);
+        builder.show();
     }
 
     @Override
