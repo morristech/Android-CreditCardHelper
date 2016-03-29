@@ -19,13 +19,13 @@ public class FreePriodHelper {
 
         if (payDate > billDate) {    // 账单日与还款日在同一个月
             if (currDay >= billDate) {
-                updatePayDate(calPayDate, 1);
+                adjustCalendarByAddMonth(calPayDate, 1);
             }
         } else {    // 还款日在下一个月
             if (currDay >= billDate) {
-                updatePayDate(calPayDate, 2);
+                adjustCalendarByAddMonth(calPayDate, 2);
             } else {
-                updatePayDate(calPayDate, 1);
+                adjustCalendarByAddMonth(calPayDate, 1);
             }
         }
 
@@ -36,12 +36,19 @@ public class FreePriodHelper {
         return days;
     }
 
-    static void updatePayDate(Calendar calPayDate, int stepParam) {
-        int oriPayMonth = calPayDate.get(Calendar.MONTH);
-        if ((oriPayMonth + stepParam) > Calendar.DECEMBER) {
-            int oriPayYear = calPayDate.get(Calendar.YEAR);
-            calPayDate.set(Calendar.YEAR, oriPayYear + 1);
+    static void adjustCalendarByAddMonth(Calendar calendar, int offsetMonth) {
+        int oriMonth = calendar.get(Calendar.MONTH);
+        int totalMonth = oriMonth + offsetMonth;
+        int offsetYear = totalMonth / 12;
+
+        int destMonth = totalMonth % 12;
+        if (destMonth < 0) {
+            destMonth += 12;
+            offsetYear -= 1;
         }
-        calPayDate.set(Calendar.MONTH, (oriPayMonth + stepParam) % Calendar.DECEMBER);
+
+        int oriYear = calendar.get(Calendar.YEAR);
+        calendar.set(Calendar.YEAR, oriYear + offsetYear);
+        calendar.set(Calendar.MONTH, destMonth);
     }
 }
