@@ -16,6 +16,10 @@ import android.widget.TextView;
 import net.soleheart.creditcardhelper.greendao.CreditCard;
 import net.soleheart.creditcardhelper.greendao.CreditCardDao;
 import net.soleheart.creditcardhelper.greendao.DaoMaster;
+import net.soleheart.creditcardhelper.logic.FreePriodHelper;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DetailActivity extends AppCompatActivity {
     private DaoMaster.DevOpenHelper mDaoHelper;
@@ -26,7 +30,14 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mPayDate;
     private TextView mLastDigits;
 
+    private TextView mToday;
+    private TextView mBillDaysLeft;
+    private TextView mPayDaysLeft;
+    private TextView mFreePeriod;
+
     private long mId;
+
+    private SimpleDateFormat mDateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +48,7 @@ public class DetailActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         mId = getIntent().getLongExtra("creditcard.id", -1);
+        mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
         initDao();
         initViews();
@@ -53,6 +65,11 @@ public class DetailActivity extends AppCompatActivity {
         mBillDate = (TextView) findViewById(R.id.detail_bill_date);
         mPayDate = (TextView) findViewById(R.id.detail_pay_date);
         mLastDigits = (TextView) findViewById(R.id.detail_last_digits);
+
+        mToday = (TextView) findViewById(R.id.detail_today);
+        mBillDaysLeft = (TextView) findViewById(R.id.detail_bill_days_left);
+        mPayDaysLeft = (TextView) findViewById(R.id.detail_pay_days_left);
+        mFreePeriod = (TextView) findViewById(R.id.detail_free_period);
 
         findViewById(R.id.detail_delete).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,10 +103,23 @@ public class DetailActivity extends AppCompatActivity {
 
     private void refreshData() {
         CreditCard creditCard = mDaoMaster.newSession().getCreditCardDao().load(mId);
+
+        int billDay = creditCard.getBillDate();
+        int payDay = creditCard.getPayDate();
+
         mBankName.setText(creditCard.getBankName());
         mBillDate.setText(creditCard.getBillDate() + "号");
         mPayDate.setText(creditCard.getPayDate() + "号");
         mLastDigits.setText(creditCard.getLastDigits());
+
+        int billDaysLeft = FreePriodHelper.calcNextDateDaysLeft(billDay);
+        int payDaysLeft = FreePriodHelper.calcNextDateDaysLeft(payDay);
+        int freePeriod = FreePriodHelper.calcFreePeriod(billDay, payDay);
+
+        mToday.setText(mDateFormat.format(new Date()));
+        mBillDaysLeft.setText(billDaysLeft + "天");
+        mPayDaysLeft.setText(payDaysLeft + "天");
+        mFreePeriod.setText(freePeriod + "天");
     }
 
     @Override
