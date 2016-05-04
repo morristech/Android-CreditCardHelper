@@ -17,12 +17,14 @@ public class FreePriodHelper {
         Calendar calPayDate = Calendar.getInstance();
         calPayDate.set(Calendar.DATE, payDay);
 
+        // 观察发现，有些银行(浦发银行)将账单日当天计为当前账单周期，而有些银行(招商)则计入下个账单周期
+        // 保险起见，采用前者的算法
         if (payDay > billDay) {    // 账单日与还款日在同一个月
-            if (currDay >= billDay) {
+            if (currDay > billDay) {
                 adjustCalendarByAddMonth(calPayDate, 1);
             }
         } else {    // 还款日在下一个月
-            if (currDay >= billDay) {
+            if (currDay > billDay) {
                 adjustCalendarByAddMonth(calPayDate, 2);
             } else {
                 adjustCalendarByAddMonth(calPayDate, 1);
